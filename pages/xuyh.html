@@ -4,9 +4,202 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>分类管理</title>
 </head>
+<link rel="stylesheet" href="http//at.alicdn.com/t/font_1393987_3i0y9saucs6.css">
+<style>
+body{
+    background-color: #fff;
+    /* color: #ccc; */
+    margin: 0px;
+    padding: 0px;
+    cursor: pointer;
+}
+h3{
+   margin:0px;
+   font-weight: none; 
+}
+h3>a{
+    text-decoration: none;
+    color: #000;
+    font-size: 24px;
+    font-weight: none;
+}
+
+.navigation{
+    display:inline-block;
+    width: 100px;
+    height: 30px;
+    border: 1px solid #ededed;
+    text-align: center;
+    line-height: 30px;
+    margin-right: 15px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+.import{
+    display:inline-block;
+    margin-left: 50px;
+    color: #003;
+}
+input{
+    border: 1px solid #18aeff;
+    height:25px;
+    
+}
+.import>a{
+    color: #000;
+    font-size: 14px;
+}
+table.tabl{
+      box-sizing: border-box;
+      width: 100%;
+      border-collapse: collapse;
+      margin-top:2px; 
+  }
+  table.tabl td,
+  table.tabl th{
+      border: 1px solid #ccc;
+      line-height: 2em;
+      text-align: center;
+  }
+  a{
+      text-decoration: none;
+  }
+  .none{
+      display: none;
+  }
+  .submit{
+      margin-bottom: 10px;
+  }
+</style>
 <body>
-    <div>tttt</div>
+    <h3><a href="javascript:void(0)">主页</a>/分类管理</h3>
+    <div class="navigation" id="bth_add">添加</div>
+    <div class="navigation">批量删除</div>
+    <div class="navigation">导出</div>
+    <div class="import "><input type="text" name =seek placeholder="请输入...">
+    <a href="javascript:void(0)">搜索</a>
+    </div>
+    <form action="javascript:void(0)" class="submit">
+        <table>
+            <tbody>
+                <tr>
+                    <td>编号</td>
+                    <td><input type="text" name ="real"></td>  <!--设置添加栏 -->           
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>分类名称</td>
+                    <td><input type="text" name = telep""></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><input type="submit" value="提交"></td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+    <table class="tabl">
+        <thead>
+            <tr>
+                <td><input type="checkbox"></td>
+                <td>编号</td>
+                <td>分类名称</td>
+                <td>数量</td>
+                <td>类型</td>
+                <td width = "300px">操作</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="none">
+                <td><input type="checkbox"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <a class="bth_arr" href="javascript:void(0)" >删除</a>
+                    <a class="bth_ess" href="javascript:void(0)">修改</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+  
+    <script>
+            var baseURL = "http://134.175.154.93:6677"   
+//添加绑定
+            var bth_add = document.getElementById("bth_add");       //获取id bth_add(添加按钮)
+            bth_add.onclick = function(event){    //给添加按钮  绑定处理函数
+            var newTr = tbody.firstElementChild.cloneNode(true);     //克隆父元素下第一个子元素 
+            newTr.className = "";        //因为tr被用none隐藏所以克隆出来的要是不想被隐藏就把值设置为空
+            tbody.appendChild(newTr);     //给父元素下面子元素最后添加克隆产物
+            newTr.children[1].innerText = "徐先生";    //添加时姓名里面显示内容
+             } 
+//保存绑定
+            document.forms[0].onsubmit = function(event){  //给保存添加绑定
+                alert(1);
+    
+                event.preventDefault();  //阻止默认行为
+            }        
+    
+//删除绑定
+            var tbody = document.getElementsByTagName("tbody")[1];   //获取tbody的第几个标签
+            tbody.onclick = function(event){   //给删除按钮  绑定处理函数  
+            if(event.target.nodeName ==="A"){ //判断event.target是否等于a       
+            var id = event.target.parentNode.parentNode.children[0].children[0].value;  //让id等于input这样删除input时删除该id即可   
+
+//调用ajax删除数据库中的数据      
+            var xhr = new XMLHttpRequest(); //实例化对象
+            xhr.responseType = "json"
+            xhr.open("POST",baseURL+"/category/deleteByCategoryId");    //后台需要post类型调取
+            xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded')   //查询字符串格式
+            xhr.send("id="+id)  
+            xhr.onreadystatechange = function(){
+            if(this.readyState === 4){
+               if(this.status === 200){
+            console.log(this.response);
+            if(this.response.status === 200){
+                initData();
+            }else{
+                alert("删除失败");
+            }
+            }
+            }
+            }
+        }
+    }   
+//初始化数据s
+initData();
+        function initData(){  //设定函数
+        var xhr = new XMLHttpRequest();  //实例化xhr对象
+        xhr.open("get",baseURL+"/category/findAllCategory");   //设置请求行(交互后台连接地址)
+        xhr.responseType = "json";  //设置请求头()设置响应类型为jnso 且转换为对象
+        xhr.send()  
+        xhr.onreadystatechange = function(){   //监听响应
+         if(this.readyState === 4){   
+              Array.prototype.slice.call(tbody.children,0).forEach(function(item,index){  //先将tbody中的数据清除掉
+                if(index!== 0){
+                tbody.removeChild(item); 
+              }     
+              });           
+              this.response.data.forEach(function(iten){  //遍历结果  渲染数据
+                console.log(iten);
+              var newTr = tbody.firstElementChild.cloneNode(true);
+              newTr.children[0].children[0].value = iten.id; 
+              //newTr.children[1].innerHTML = "<strong>"+iten.name+"</strong>";  
+              newTr.children[2].innerHTML = "<strong>"+iten.name+"</strong>";  
+              newTr.children[3].innerHTML = "<strong>"+iten. num+"</strong>";
+              newTr.children[4].innerHTML = "<strong>"+iten. parentId+"</strong>";
+              newTr.className = "";        
+              tbody.appendChild(newTr); 
+              })
+           }else{
+              alert("接口异常");
+          }
+         }
+        }
+        </script>
 </body>
 </html>
