@@ -6,7 +6,7 @@ html,body,.container {
 }
 .container > .left {
 	width: 220px;
-	background-color: #333;
+	background-color: #0f66ab;
 	height: 100%;
 	float: left;
 	color: #ffffff;
@@ -20,7 +20,7 @@ html,body,.container {
 	font-weight: bold;
 	text-align: center;
 	line-height: 4em;
-	border-bottom: 1px solid #ededed
+	border-bottom: 1px solid #3889ca
 }
 .left >ul.left_nav {
 
@@ -28,21 +28,21 @@ html,body,.container {
 .left >ul.left_nav > li{
 	text-align: center;
 	line-height: 3em;
-	border-bottom: 1px solid #ededed
+	border-bottom: 1px solid #3889ca;
 }
-.left >ul.left_nav > li.current{
-	background-color: #ededed;
+.left >ul.left_nav > li.current {
+	background-color: #3889c8;
 }
 .left >ul.left_nav > li.current a{
-	color: #333;
+	color: white;
 }
 
 .container > .right {
 	box-sizing: border-box;
 	height: 100%;
-	background-color: #ededed;
+	background-color: #e9f0f3;
 	margin-left: 220px;
-	padding: 10px 20px;
+	padding: 10px 14px;
 }
 .container > .right >.content {
 	border-radius: 5px;
