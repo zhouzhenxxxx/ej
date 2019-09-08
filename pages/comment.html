@@ -9,9 +9,9 @@
 		border:1px solid #ccc;
 		color: #333;
 		cursor :pointer;
-		background-color: #0f66ab;
+		background-color: #639ac7;
 	}
-	.btns .btn:nth-child(3){
+	.btns .btn:nth-child(2){
 		margin-left: 250px;
 	}
 	input[type=submit]{
@@ -21,7 +21,7 @@
 		padding: .3em 1.2em;
 		cursor :pointer;
 		color: #333;
-		background-color: #0f66ab;
+		background-color: #639ac7;
 	}
 	table.table {
 		box-sizing: border-box;
@@ -50,16 +50,19 @@ var baseURL = "http://134.175.154.93:6677";
 //加载文档
 $(function(){
 	//为添加评论绑定事件
-	$(".btns div:nth-child(2)").on("click",function(){
+	$(".btns div:nth-child(1)").on("click",function(){
 		//获取表单的value
 		var id = $("form tbody tr:first-child>td:nth-child(2)>input").val();
 		var content = $("form tbody tr:nth-child(2)>td:nth-child(2)>input").val();
 		var commentTime = $("form tbody tr:nth-child(3)>td:nth-child(2)>input").val();
 		var orderId = $("form tbody tr:nth-child(4)>td:nth-child(2)>input").val();
 		//把参数格式化
-		//var param ={"id:"id",content:"content",commentTime:"commentTime",orderId:"orderId};
-		//console.log(param)
-		console.log(id,content,commentTime,orderId);
+		var param ={id:$("form tbody tr:first-child>td:nth-child(2)>input").val(),content:$("form tbody tr:nth-child(2)>td:nth-child(2)>input").val(),commentTime:$("form tbody tr:nth-child(3)>td:nth-child(2)>input").val(),orderId:$("form tbody tr:nth-child(4)>td:nth-child(2)>input").val()};
+		console.log(param)
+		//console.log(id,content,commentTime,orderId);
+		$.post(baseURL+"/comment/insertComment",param,function(response){
+			alert(response.message);
+		})
 
 	})
 
@@ -70,42 +73,8 @@ $(function(){
 		$.post(baseURL+"/comment/deleteCommentById",param,function(response){
 			alert(response.message);
 
-			//重新刷新数据,通过重新查询实现刷新功能
-			$.get(baseURL+"/comment/findCommentByOrderId",param,function(response){
-				console.log(response);
-
-				//清除其他查询时表头thead的影响
-				$("#customer_tbl tbody").empty();
-				$("#customer_tbl thead").empty();
-				//重新载入本次查询时所需的thead格式
-				var oldTh=$(`<tr>
-					<th width="60px">编号</th>
-					<th>评论内容</th>
-					<th>评论时间</th>
-					<th>订单编号</th>
-					<th width="100px">操作</th>
-				</tr>`);
-				$("#customer_tbl thead").append(oldTh);
-
-				if(response.data==null){
-					var null_data = $(`<tr><td colspan="8">数据全部清除，请重新查询！</td></tr>`);
-					$("#customer_tbl>tbody").append(null_data);
-				}else{
-					response.data.forEach(function(item){
-					//新增一个子节点
-					var newTr=$(`<tr>
-						<td><input type="checkbox" name="checkbox" value="`+item.id+`"></td>
-						<td>`+item.content+`</td>
-						<td>`+item.commentTime+`</td>
-						<td>`+item.orderId+`</td>
-						<td><a class="btn_del" href="javascript:void(0)">删除</a></td>
-						</tr>`);	
-					$("#customer_tbl>tbody").append(newTr);
-					})
-
-				}
-				});
-
+			//模拟点击查询事件，实现刷新数据
+			$("#query").trigger("click");
 		});
 
 		
@@ -265,7 +234,7 @@ $(function(){
 </script>
 <div class="customer">
 	<div class="btns">
-		<div class="btn" id="btn_add">添加</div>
+		
 		<div class="btn">添加评论</div>
 		<div class="btn">
 			<select name="query_condition" id="query_condition">
