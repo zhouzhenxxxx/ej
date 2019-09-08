@@ -4,14 +4,17 @@
         }
         .btn {
 		display: inline-block;
-		padding: .3em 1.2em;
+		padding: .3em 1em;
 		border-radius: 4px;
 		border:1px solid #ccc;
 		background-color: #639ac7;
 		color: white;
 		cursor :pointer;
 		margin: 7px 0;
-	    }
+		}
+		.btn:nth-child(4){
+			margin-left: 400px;
+		}
         table.table {
             box-sizing: border-box;
             width: 100%;
@@ -73,10 +76,17 @@
 					});
 					break;
                 case "btn_upd":
-					//将原有的信息放到表单中
-					var id = {id:$(this).parents("tr").find("input").val()};
+					var url = "/customer/saveCustomerOrUpdateCustomer";
+					var id = $(this).parents("tr").find("input").val();
+					console.log("id为",id);
+					var realname = $("input[name=realname]").val($(this).parents("tr").find('td:nth-child(2)').text());
+					var telephone = $("input[name=telephone]").val($(this).parents("tr").find('td:nth-child(4)').text());
+					var data = {id:id,realname:realname,telephone:telephone};
+					$.post(baseURL+url,data,function(){
+						initData();
+					})
 					
-                    break;
+					break;
             }
 		})
 		
@@ -88,7 +98,6 @@
 
 	})
 	
-
 	
 		//为保存按钮绑定事件
 		$("input[type=submit]").on("click",function(event){
@@ -104,7 +113,17 @@
         <div class="btns">
             <div class="btn" id="btn_add">添加</div>
             <div class="btn">批量导入</div>
-            <div class="btn">批量删除</div>
+			<div class="btn">批量删除</div>
+			<div class="btn">
+				<select name="query_select" id="selection">
+					<option value="all" selected>全部查询</option>
+					<option value="fuzzy">模糊查询</option>
+					<option value="id">ID查询</option>
+				</select>
+			</div>
+			<div class="btn"><input type="text" name="text"></div>
+			<div class="btn">查询</div>
+			
         </div>
         <div class="forms">
             <form action="javascript:void(0)">
