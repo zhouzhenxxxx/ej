@@ -106,7 +106,7 @@ $(function(){
 				$("#customer_tbl thead").append(oldTh);
 
 				if(response.data==null||response.data.length==0){
-					var null_data = $(`<tr><td colspan="8">你要查询的数据不存在，请重新输入！</td></tr>`);
+					var null_data = $(`<tr><td colspan="8">你要查询的数据不存在或暂无订单，请重新查询！</td></tr>`);
 					$("#customer_tbl>tbody").append(null_data);
 				}else{
 					response.data.forEach(function(item){
@@ -152,7 +152,7 @@ $(function(){
 							$("#customer_tbl thead").append(newTh);
 					console.log(response.data);
 					if(response.data==null||response.data.length==0){
-						var null_data = $(`<tr><td colspan="30">你要查询的数据不存在，请重新输入！</td></tr>`);
+						var null_data = $(`<tr><td colspan="30">你要查询的数据不存在或暂无订单，请重新查询！</td></tr>`);
 						$("#customer_tbl>tbody").append(null_data);
 					}else{
 						response.data.forEach(function(item){
@@ -202,7 +202,7 @@ $(function(){
 							$("#customer_tbl thead").append(newTh);
 					console.log(response.data);
 					if(response.data==null||response.data.length==0){
-						var null_data = $(`<tr><td colspan="30">你要查询的数据不存在，请重新输入！</td></tr>`);
+						var null_data = $(`<tr><td colspan="30">你要查询的数据不存在或暂无订单，请重新查询！</td></tr>`);
 						$("#customer_tbl>tbody").append(null_data);
 					}else{
 						response.data.forEach(function(item){

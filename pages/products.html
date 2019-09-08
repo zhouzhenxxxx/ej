@@ -152,8 +152,8 @@ $(function(){
 		var data1 ={id:idd,name:nam,description:des,price:pri,status:sta,photo:pho,categoryId:cat};
 		var data2 ={name:nam,description:des,price:pri,status:sta,photo:pho,categoryId:cat};
 
-		console.log("daea1",data1);
-		console.log("daea2",data2);
+		console.log("data1",data1);
+		console.log("data2",data2);
 
 		//判断如果有id时修改，没有时删除
 		if (idd) {
@@ -176,7 +176,7 @@ $(function(){
 
 
 	//为批量删除绑定事件
-	$(".btns>div:nth-child(3)").on("click",function(){
+	$(".btns>div:nth-child(2)").on("click",function(){
 		//1、先获得批量删除的id组参数
 		//1.1、通过获得所有复选框得到产品个数
 		var chckBox= document.getElementsByName("chckBox");
@@ -274,7 +274,7 @@ $(function(){
 					$("tbody").empty();
 					//把查询得到的数据渲染到页面上
 						//如果查询数据为空
-					if(response.data==null){
+					if(response.data==null||response.data.length==0){
 						var null_data = $(`<tr><td colspan="8">没有查询到数据</td></tr>`);
 						$("#customer_tbl>tbody").append(null_data);
 					}else{
@@ -307,7 +307,7 @@ $(function(){
 					$("tbody").empty();
 					//把查询得到的数据渲染到页面上
 					//如果查询数据为空
-					if(response.data==null){
+					if(response.data==null||response.data.length==0){
 						var null_data = $(`<tr><td colspan="8">没有查询到数据</td></tr>`);
 						$("#customer_tbl>tbody").append(null_data);
 					}else{
@@ -339,7 +339,7 @@ $(function(){
 					$("tbody").empty();
 					//把查询得到的数据渲染到页面上
 					//如果查询数据为空
-					if(response.data==null){
+					if(response.data==null||response.data.length==0){
 						var null_data = $(`<tr><td colspan="8">没有查询到数据</td></tr>`);
 						$("#customer_tbl>tbody").append(null_data);
 					}else{
@@ -371,7 +371,7 @@ $(function(){
 					$("tbody").empty();
 					//把查询得到的数据渲染到页面上
 					//如果查询数据为空
-					if(response.data==null){
+					if(response.data==null||response.data.length==0){
 						var null_data = $(`<tr><td colspan="8">没有查询到数据</td></tr>`);
 						$("#customer_tbl>tbody").append(null_data);
 					}else{
@@ -432,7 +432,7 @@ $(function(){
 
 					//把查询得到的数据渲染到页面上
 					//如果查询数据为空
-					if(response.data==null){
+					if(response.data==null||response.data.length==0){
 						var null_data = $(`<tr><td colspan="8">没有查询到数据</td></tr>`);
 						$("#customer_tbl>tbody").append(null_data);
 					}else{
@@ -490,12 +490,10 @@ $(function(){
 					`);
 					$("#customer_tbl thead").append(newTh);
 
-					// initData();
-					//清空tbody里的数据
 					$("tbody").empty();
 					//把查询得到的数据渲染到页面上
 					//如果查询数据为空
-					if(response.data==null){
+					if(response.data==null||response.data.length==0){
 						var null_data = $(`<tr><td colspan="8">没有查询到数据</td></tr>`);
 						$("#customer_tbl>tbody").append(null_data);
 					}else{
@@ -590,9 +588,10 @@ $(function(){
 					</tr>
 					
 					
+					
 				</tbody>
 			</table>
-			<input type="submit" value="增加/确认修改">
+			<input type="submit" value="添加/确认修改">
 
 		</form>
 	</div>
