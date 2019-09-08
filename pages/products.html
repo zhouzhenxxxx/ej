@@ -9,9 +9,9 @@
 		border:1px solid #ccc;
 		color: #333;
 		cursor :pointer;
-		background-color: #0f66ab;
+		background-color: #639ac7;
 	}
-	.btns .btn:nth-child(4){
+	.btns .btn:nth-child(3){
 		margin-left: 250px;
 	}
 	input[type=submit]{
@@ -21,7 +21,7 @@
 		padding: .3em 1.2em;
 		cursor :pointer;
 		color: #333;
-		background-color: #0f66ab;
+		background-color: #639ac7;
 	}
 	table.table {
 		box-sizing: border-box;
@@ -141,7 +141,7 @@ $(function(){
 		var pho = $('table tr:nth-child(5) td:nth-child(2) input').val();
 		//后台接口的categoryId不能修改
 		// var cat = $('table tr:nth-child(6) td:nth-child(2) input').val();
-		var cat = 1;
+		var cat = null;
 
 
 		//需要使用正则表达式判断状态和产品分类的值
@@ -534,7 +534,7 @@ $(function(){
 </script>
 <div class="customer">
 	<div class="btns">
-		<div class="btn" id="btn_add">添加</div>
+		<!-- <div class="btn" id="btn_add">添加</div> -->
 		<div class="btn">批量更新</div>
 		<div class="btn">批量删除</div>
 		<div class="btn">
@@ -576,7 +576,7 @@ $(function(){
 					<tr>
 						<td>状态</td>
 						<td><input type="text" name="status"></td>
-						<td>状态暂且只能为1</td>
+						<td>状态暂且只能为1，受到外键约束</td>
 					</tr>
 					<tr>
 						<td>图片</td>
@@ -586,13 +586,13 @@ $(function(){
 					<tr>
 						<td>类别</td>
 						<td><input type="text" name="categoryId"></td>
-						<td></td>
+						<td>不能随便改，受到外键约束</td>
 					</tr>
 					
 					
 				</tbody>
 			</table>
-			<input type="submit" value="更新">
+			<input type="submit" value="增加/确认修改">
 
 		</form>
 	</div>
