@@ -2,9 +2,12 @@ $(function(){
 	//为导航添加事件
 	$("ul.left_nav").on("click","li",function(){
 		var url = $(this).attr("url");
+		console.log("url",url);
+		console.log("this",this);
 		$("ul.left_nav > li").removeClass("current");
 		$(this).addClass("current");
 		$("#wrapper").load(url);
+		alert(1);
 	})
 	// 模拟点击第一个li
 	$("ul.left_nav > li:first-child").trigger("click");
