@@ -9,6 +9,19 @@
 		border:1px solid #ccc;
 		color: #333;
 		cursor :pointer;
+		background-color: #0f66ab;
+	}
+	.btns .btn:nth-child(4){
+		margin-left: 250px;
+	}
+	input[type=submit]{
+		margin-top: 5px;
+		margin-left: 80px;
+		border: none;
+		padding: .3em 1.2em;
+		cursor :pointer;
+		color: #333;
+		background-color: #0f66ab;
 	}
 	table.table {
 		box-sizing: border-box;
@@ -26,21 +39,37 @@
 		background-color: #ededed;
 	}
 
-	.none {
-		display: none;
-	}
+
+	
 </style>
 <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
 <script>
-var baseURL = "http://172.16.5.250:6677";
+var baseURL = "http://134.175.154.93:6677";
 // 初始化数据
 function initData(){
-	var url = "/product/findAllProduct"
+	var url = "/product/findAllProduct";
+
+	$("#customer_tbl thead").empty();
+	var oldTh=$(`
+			<tr class="oldTh">
+				<th width="60px">编号</th>
+				<th width="200px">产品</th>
+				<th>生产地</th>
+				<th>价格</th>
+				<th>状态</th>
+				<th>图片</th>
+				<th>类别</th>
+				<th width="100px">操作</th>
+			</tr>
+		`);
+	$("#customer_tbl thead").append(oldTh);
+	
 	$.get(baseURL+url,function(response){
-		$("#customer_tbl > tbody").empty();
+		//清空
+		$("#customer_tbl tbody").empty();
 		response.data.forEach(function(item){
 			var newTr = $(`<tr>
-				<td><input type="checkbox" value="`+item.id+`"></td>
+				<td><input type="checkbox" name="chckBox" value="`+item.id+`"></td>
 				<td>`+item.name+`</td>
 				<td>`+item.description+`</td>
 				<td>`+item.price+`</td>
@@ -60,18 +89,444 @@ function initData(){
 $(function(){
 	// 初始化加载
 	initData();
-	// 为删除按钮绑定事件
-	$("#customer_tbl > tbody").on("click","a",function(){
+
+
+	// 为删除和修改按钮绑定事件
+	$("#customer_tbl > tbody").on("click","a",function(event){
 		switch(this.className){
 			case "btn_del":
-				alert("del");
-				var id = $(this).parents("tr").find("input").val()
+				var id = {id:$(this).parents("tr").find("input").val()}
+				var url = "/product/deleteProductById";
+				$.post(baseURL+url,id,function(response){
+					initData();
+					alert("删除成功！");
+				})
 				break;
 			case "btn_upd":
-				alert("upd");
+				//先将选中的信息放到表单中
+				//隐藏框获得id
+				var a=$("input[type=hidden]").val($(this).parents("tr").find('td:nth-child(1)>input').val());
+				console.log("a",a)
+				//产品输入框获得文本
+				$("form input[name=name]").val($(this).parents("tr").find('td:nth-child(2)').text());
+				//产地输入框获得文本
+				$("form input[name=description]").val($(this).parents("tr").find('td:nth-child(3)').text());
+				//价格输入框获得文本
+				$("form input[name=price]").val($(this).parents("tr").find('td:nth-child(4)').text());
+				//状态输入框获得文本
+				$("form input[name=status]").val($(this).parents("tr").find('td:nth-child(5)').text());
+				//图片输入框获得文本
+				$("form input[name=photo]").val($(this).parents("tr").find('td:nth-child(6)').text());
+				//类别输入框获得文本
+				$("form input[name=categoryId]").val($(this).parents("tr").find('td:nth-child(7)').text());
+
 				break;
 		}
 	})
+
+
+
+
+	//绑定点击提交按钮的事件  //!!不要把改函数放到删除和修改的范围中
+	$("form input[type=submit]").on("click",function(){
+
+		//调用后台接口，使用ajax方法
+		//获得要传递的参数
+		var idd = $("input[type=hidden]").val();
+		 console.log("idd",idd);
+		var nam = $("table tr:nth-child(1) td:nth-child(2) input").val();//！！input里的值
+		var des = $('table tr:nth-child(2) td:nth-child(2) input').val();
+		var pri = $('table tr:nth-child(3) td:nth-child(2) input').val();
+		var sta = $('table tr:nth-child(4) td:nth-child(2) input').val();
+		var pho = $('table tr:nth-child(5) td:nth-child(2) input').val();
+		//后台接口的categoryId不能修改
+		// var cat = $('table tr:nth-child(6) td:nth-child(2) input').val();
+		var cat = 1;
+
+
+		//需要使用正则表达式判断状态和产品分类的值
+		
+
+
+		//把上述参数整合在一起传入函数中
+		var data1 ={id:idd,name:nam,description:des,price:pri,status:sta,photo:pho,categoryId:cat};
+		var data2 ={name:nam,description:des,price:pri,status:sta,photo:pho,categoryId:cat};
+
+		console.log("daea1",data1);
+		console.log("daea2",data2);
+
+		//判断如果有id时修改，没有时删除
+		if (idd) {
+			//修改数据
+			$.post(baseURL+"/product/updateProduct",data1,function(response){
+				initData();
+				alert(response.message);
+			})
+		}else{
+			//添加数据
+			$.post(baseURL+"/product/insertProduct",data2,function(response){
+				initData();
+				alert(response.message);
+			})
+		}
+
+		
+	})
+
+
+
+	//为批量删除绑定事件
+	$(".btns>div:nth-child(3)").on("click",function(){
+		//1、先获得批量删除的id组参数
+		//1.1、通过获得所有复选框得到产品个数
+		var chckBox= document.getElementsByName("chckBox");
+		var num = chckBox.length;
+		var ids = "";
+		var count = 0;
+		
+		//1.2、遍历所有得产品，获取选中得id，并将所得id转化为后台所需参数得格式
+		for(var index = 0;index<num;index++){
+			//1.2.1、判断选中的复选框
+			if (chckBox[index].checked) {
+				count=count+1;
+				if(count==1){
+					ids =chckBox[index].value;
+				}else{
+				ids+=","+chckBox[index].value;
+				}
+			}
+		}
+		console.log("ids:",ids);
+		//return ids;  //跳出该函数
+
+		var idList="idList="+ids;
+
+		//!!!批量删除所需得参数为: idList=id1,id2
+		//console.log(idList)
+		//2、通过ajax与后台接口相连
+		$.post(baseURL+"/product/deleteBathProduct",idList,function(response){
+			initData();
+			alert(response.message);
+		})
+		
+	})
+
+
+	//为批量更新绑定事件
+	$(".btns>div:nth-child(2)").on("click",function(){
+		//1、先获得批量删除的id组参数
+		//1.1、通过获得所有复选框得到产品个数
+		var chckBox= document.getElementsByName("chckBox");
+		var num = chckBox.length;
+		var ids = "";
+		var count = 0;
+		
+		//1.2、遍历所有得产品，获取选中得id，并将所得id转化为后台所需参数得格式
+		for(var index = 0;index<num;index++){
+			//1.2.1、判断选中的复选框
+			if (chckBox[index].checked) {
+				count=count+1;
+				if(count==1){
+					ids =chckBox[index].value;
+				}else{
+				ids+=","+chckBox[index].value;
+				}
+			}
+		}
+		console.log("ids:",ids);
+		var idList="idList="+ids;
+		console.log("idList:",idList);
+		//return ids;  //跳出该函数，不再执行往下代码
+		//获取批量更新的状态修改值
+		var status =$("form input[name=status]").val();
+
+		//!!!批量更新所需得参数为: status=x&idList=id1,id2
+		var param = "status="+status+"&"+idList;
+		console.log(param)
+		//2、通过ajax与后台接口相连
+		$.post(baseURL+"/product/UpdateBatchProductStatus?"+param,function(response){
+			initData();
+			alert(response.message);
+		})
+		
+	})
+
+
+
+
+
+	//为查询按钮绑定事件
+	$("#query").on("click",function(){
+		var options = $("#query_condition option:selected").val();
+		console.log(options)
+		var text = $(".btn input[name=text]").val();
+
+		console.log("name="+text);
+		//当选择不同的下拉框时，调用不同的查询方法
+		switch (options) {
+			case "all":
+				initData();
+				break;
+			case "customer":
+				$.get(baseURL+"/product/queryCustomer?"+"name="+text,function(response){
+					// initData();
+					//清空tbody里的数据
+					$("tbody").empty();
+					//把查询得到的数据渲染到页面上
+						//如果查询数据为空
+					if(response.data==null){
+						var null_data = $(`<tr><td colspan="8">没有查询到数据</td></tr>`);
+						$("#customer_tbl>tbody").append(null_data);
+					}else{
+						response.data.forEach(function(item){
+						var newTr = $(`<tr>
+						<td><input type="checkbox" name="chckBox" value="`+item.id+`"></td>
+						<td>`+item.name+`</td>
+						<td>`+item.description+`</td>
+						<td>`+item.price+`</td>
+						<td>`+item.status+`</td>
+						<td>`+item.photo+`</td>
+						<td>`+item.categoryId+`</td>
+						<td>
+							<a class="btn_del" href="javascript:void(0)">删除</a>
+							<a class="btn_upd" href="javascript:void(0)">修改</a>
+						</td>
+						</tr>`);
+						$("#customer_tbl > tbody").append(newTr);
+						});
+						// console.log(response.data);
+						console.log(response.message);
+					}
+				})
+
+				break;
+			case "name":
+				$.get(baseURL+"/product/findProductByName?"+"name="+text,function(response){
+					// initData();
+					//清空tbody里的数据
+					$("tbody").empty();
+					//把查询得到的数据渲染到页面上
+					//如果查询数据为空
+					if(response.data==null){
+						var null_data = $(`<tr><td colspan="8">没有查询到数据</td></tr>`);
+						$("#customer_tbl>tbody").append(null_data);
+					}else{
+						response.data.forEach(function(item){
+						var newTr = $(`<tr>
+						<td><input type="checkbox" name="chckBox" value="`+item.id+`"></td>
+						<td>`+item.name+`</td>
+						<td>`+item.description+`</td>
+						<td>`+item.price+`</td>
+						<td>`+item.status+`</td>
+						<td>`+item.photo+`</td>
+						<td>`+item.categoryId+`</td>
+						<td>
+							<a class="btn_del" href="javascript:void(0)">删除</a>
+							<a class="btn_upd" href="javascript:void(0)">修改</a>
+						</td>
+						</tr>`);
+						$("#customer_tbl > tbody").append(newTr);
+						});
+						// console.log(response.data);
+						console.log(response.message);
+					}
+				})
+				break;
+			case "page":
+				$.get(baseURL+"/product/findProductByPage?"+"currentPage="+text,function(response){
+					// initData();
+					//清空tbody里的数据
+					$("tbody").empty();
+					//把查询得到的数据渲染到页面上
+					//如果查询数据为空
+					if(response.data==null){
+						var null_data = $(`<tr><td colspan="8">没有查询到数据</td></tr>`);
+						$("#customer_tbl>tbody").append(null_data);
+					}else{
+						response.data.forEach(function(item){
+						var newTr = $(`<tr>
+						<td><input type="checkbox" name="chckBox" value="`+item.id+`"></td>
+						<td>`+item.name+`</td>
+						<td>`+item.description+`</td>
+						<td>`+item.price+`</td>
+						<td>`+item.status+`</td>
+						<td>`+item.photo+`</td>
+						<td>`+item.categoryId+`</td>
+						<td>
+							<a class="btn_del" href="javascript:void(0)">删除</a>
+							<a class="btn_upd" href="javascript:void(0)">修改</a>
+						</td>
+						</tr>`);
+						$("#customer_tbl > tbody").append(newTr);
+						});
+						// console.log(response.data);
+						console.log(response.message);
+					}
+				})
+				break;
+			case "categoryId":
+				$.get(baseURL+"/product/findProductByCategoryId?"+"category_id="+text,function(response){
+					// initData();
+					//清空tbody里的数据
+					$("tbody").empty();
+					//把查询得到的数据渲染到页面上
+					//如果查询数据为空
+					if(response.data==null){
+						var null_data = $(`<tr><td colspan="8">没有查询到数据</td></tr>`);
+						$("#customer_tbl>tbody").append(null_data);
+					}else{
+						response.data.forEach(function(item){
+						var newTr = $(`<tr>
+						<td><input type="checkbox" name="chckBox" value="`+item.id+`"></td>
+						<td>`+item.name+`</td>
+						<td>`+item.description+`</td>
+						<td>`+item.price+`</td>
+						<td>`+item.status+`</td>
+						<td>`+item.photo+`</td>
+						<td>`+item.categoryId+`</td>
+						<td>
+							<a class="btn_del" href="javascript:void(0)">删除</a>
+							<a class="btn_upd" href="javascript:void(0)">修改</a>
+						</td>
+					</tr>`);
+					$("#customer_tbl>tbody").append(newTr);
+					});
+					// console.log(response.data);
+					}
+				})
+
+				break;
+			case "query":
+				
+				$.get(baseURL+"/product/query?"+"categoryId="+text,function(response){
+					// initData();
+
+					//当使用该查询时，先清空原有的thead结构和tbody
+					$("#customer_tbl thead").empty();///????点击回其他查询时要把原来的thead变回来？？？在initData()增加oldTh
+					//清空tbody里的数据
+					$("#customer_tbl tbody").empty();
+					//增加一个新的头部
+					//！！！！！！！！！在添加叶哥newTh时，不要添加thead进去！！！！！
+					var newTh=$(`
+						<tr>
+							<th width="60px" rowspan="2" colspan="5">编号</th>
+							<th rowspan="2" colspan="5">产品</th>
+							<th rowspan="2" colspan="5">生产地</th>
+							<th rowspan="2" colspan="5">价格</th>
+							<th rowspan="2" colspan="5">状态</th>
+							<th rowspan="2" colspan="5">图片</th>
+							<th colspan="5">分类</th>
+							<th width="100px" rowspan="2" colspan="5">操作</th>
+						</tr>
+						<tr>
+							<td height=20px;>分类编号</td>
+							<td height=20px;>分类id</td>
+							<td height=20px;>分类名称</td>
+							<td height=20px;>数量</td>
+							<td height=20px;>父类</td>
+						</tr>
+					`);
+					$("#customer_tbl").append(newTh);
+
+					console.log("response.data:",response.data);
+
+					//把查询得到的数据渲染到页面上
+					//如果查询数据为空
+					if(response.data==null){
+						var null_data = $(`<tr><td colspan="8">没有查询到数据</td></tr>`);
+						$("#customer_tbl>tbody").append(null_data);
+					}else{
+						response.data.forEach(function(item){
+						var newTr = $(`<tr>
+						<td colspan="5"><input type="checkbox" name="chckBox" value="`+item.id+`"></td>
+						<td colspan="5">`+item.name+`</td>
+						<td colspan="5">`+item.description+`</td>
+						<td colspan="5">`+item.price+`</td>
+						<td colspan="5">`+item.status+`</td>
+						<td colspan="5">`+item.photo+`</td>
+						<td>`+item.id+`</td>
+						<td>`+item.category.id+`</td>
+						<td>`+item.category.name+`</td>
+						<td>`+item.category.num+`</td>
+						<td>`+item.category.parentId+`</td>
+						<td colspan="4">
+							<a class="btn_del" href="javascript:void(0)">删除</a>
+							<a class="btn_upd" href="javascript:void(0)">修改</a>
+						</td>
+						</tr>`);
+						$("#customer_tbl>tbody").append(newTr);
+						});
+						// console.log(response.data);
+						console.log(response.message);
+					}
+				})
+				break;
+			case "basic":
+				$.get(baseURL+"/product/queryBasic?"+"categoryId="+text,function(response){
+
+				//当使用该查询时，先清空原有的thead结构和tbody
+					$("#customer_tbl thead").empty();///??????点击回其他查询时要把原来的thead变回来？？？？？在initData()增加oldTh
+					//清空tbody里的数据
+					$("#customer_tbl tbody").empty();
+					//增加一个新的头部
+					var newTh=$(`
+						<tr>
+							<th width="60px" rowspan="2" colspan="5">编号</th>
+							<th rowspan="2" colspan="5">产品</th>
+							<th rowspan="2" colspan="5">生产地</th>
+							<th rowspan="2" colspan="5">价格</th>
+							<th rowspan="2" colspan="5">状态</th>
+							<th rowspan="2" colspan="5">图片</th>
+							<th colspan="5">分类</th>
+							<th width="100px" rowspan="2" colspan="5">操作</th>
+						</tr>
+						<tr>
+							<td height=20px;>分类编号</td>
+							<td height=20px;>分类id</td>
+							<td height=20px;>分类名称</td>
+							<td height=20px;>数量</td>
+							<td height=20px;>父类</td>
+						</tr>
+					`);
+					$("#customer_tbl thead").append(newTh);
+
+					// initData();
+					//清空tbody里的数据
+					$("tbody").empty();
+					//把查询得到的数据渲染到页面上
+					//如果查询数据为空
+					if(response.data==null){
+						var null_data = $(`<tr><td colspan="8">没有查询到数据</td></tr>`);
+						$("#customer_tbl>tbody").append(null_data);
+					}else{
+						response.data.forEach(function(item){
+						var newTr = $(`<tr>
+						<td colspan="5"><input type="checkbox" name="chckBox" value="`+item.id+`"></td>
+						<td colspan="5">`+item.name+`</td>
+						<td colspan="5">`+item.description+`</td>
+						<td colspan="5">`+item.price+`</td>
+						<td colspan="5">`+item.status+`</td>
+						<td colspan="5">`+item.photo+`</td>
+						<td>`+item.id+`</td>
+						<td>`+item.category.id+`</td>
+						<td>`+item.category.name+`</td>
+						<td>`+item.category.num+`</td>
+						<td>`+item.category.parentId+`</td>
+						<td colspan="4">
+							<a class="btn_del" href="javascript:void(0)">删除</a>
+							<a class="btn_upd" href="javascript:void(0)">修改</a>
+						</td>
+						</tr>`);
+						$("#customer_tbl > tbody").append(newTr);
+						});
+						// console.log(response.data);
+						console.log(response.message);
+					}
+				})
+				break;
+		}
+	})
+
 
 
 
@@ -80,29 +535,65 @@ $(function(){
 <div class="customer">
 	<div class="btns">
 		<div class="btn" id="btn_add">添加</div>
-		<div class="btn">批量导入</div>
+		<div class="btn">批量更新</div>
 		<div class="btn">批量删除</div>
+		<div class="btn">
+			<select name="query_condition" id="query_condition">
+				<option value="all" selected>全部查询</option>
+				<option value="customer">模糊查询</option>
+				<option value="name">名字查询</option>
+				<option value="page">分页查询</option>
+				<option value="categoryId">分类查询</option>
+				<option value="query">级联查询</option>
+				<option value="basic">列表查询</option>
+			</select>
+		</div>
+		<div class="btn">
+			<input type="text" name="text">
+		</div>
+		<div class="btn" id="query">查询</div>
 	</div>
 	<div class="forms">
 		<form action="javascript:void(0)">
-			<input type="hidden" name="id">
+			<input type="hidden" name="id" value="">
 			<table>
 				<tbody>
 					<tr>
-						<td>姓名</td>
-						<td><input type="text" name="realname"></td>
+						<td>产品</td>
+						<td><input type="text" name="name"></td>
 						<td></td>
 					</tr>
 					<tr>
-						<td>手机号</td>
-						<td><input type="text" name="telephone"></td>
+						<td>生产地</td>
+						<td><input type="text" name="description"></td>
 						<td></td>
 					</tr>
 					<tr>
-						<td><input type="submit" value="保存"></td>
+						<td>价格</td>
+						<td><input type="text" name="price"></td>
+						<td></td>
 					</tr>
+					<tr>
+						<td>状态</td>
+						<td><input type="text" name="status"></td>
+						<td>状态暂且只能为1</td>
+					</tr>
+					<tr>
+						<td>图片</td>
+						<td><input type="text" name="photo"></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>类别</td>
+						<td><input type="text" name="categoryId"></td>
+						<td></td>
+					</tr>
+					
+					
 				</tbody>
 			</table>
+			<input type="submit" value="更新">
+
 		</form>
 	</div>
 	<table class="table" id="customer_tbl">
