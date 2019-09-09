@@ -7,7 +7,6 @@ $(function(){
 		$("ul.left_nav > li").removeClass("current");
 		$(this).addClass("current");
 		$("#wrapper").load(url);
-		alert(1);
 	})
 	// 模拟点击第一个li
 	$("ul.left_nav > li:first-child").trigger("click");

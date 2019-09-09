@@ -94,17 +94,35 @@
 		$(".btns").on("click",function(){
 			document.querySelector("tbody[class=none]").className = "";
 		})
-
-
 	})
 	
 	
 		//为保存按钮绑定事件
-		$("input[type=submit]").on("click",function(event){
-			var idd = $("input[type=hidden]").val();
-		    console.log("idd",idd);
+		$("input[type=submit]").on("click",function(){
+			var id = $("input[type=hidden]").val();
+			if(id!=null){
+				var url = "/customer/saveCustomerOrUpdateCustomer";
+				var data = {id:id,realname:$("input[name=realname]").val($(this).parents("tr").find('td:nth-child(2)').text()),
+				telephone:$("input[name=telephone]").val($(this).parents("tr").find('td:nth-child(4)').text())};
+                $.post(baseURL+url,data,function(){
+						initData();
+					})
+			}
+			else{
+				var url ="/customer/saveCustomerOrUpdateCustomer";
+				var datas = {realname:$("input[name=realname]").val($(this).parents("tr").find('td:nth-child(2)').text()),
+					telephone:$("input[name=telephone]").val($(this).parents("tr").find('td:nth-child(4)').text())}
+                $.post(baseURL+url,datas,function(){
+					initData();
+				})
+			}  
 		})
 
+
+        //绑定查询事件
+        $(".btn:last-child").on("click",function(){
+            console.log(($(".btn option").value));
+        })
 
 
 	
