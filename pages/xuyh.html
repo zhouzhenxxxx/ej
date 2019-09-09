@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>分类管理</title>
 </head>
-<link rel="stylesheet" href="http//at.alicdn.com/t/font_1393987_3i0y9saucs6.css">
+<!-- <link rel="stylesheet" href="http//at.alicdn.com/t/font_1393987_3i0y9saucs6.css"> -->
 <style>
 body{
     background-color: #fff;
@@ -82,16 +82,17 @@ table.tabl{
     <a href="javascript:void(0)">搜索</a>
     </div>
     <form action="javascript:void(0)" class="submit">
+            <input type="hidden" name="id">
         <table>
             <tbody>
                 <tr>
-                    <td>编号</td>
-                    <td><input type="text" name ="real"></td>  <!--设置添加栏 -->           
+                    <td>分类名称</td>
+                    <td><input type="text" name ="putname"></td>  <!--设置添加栏 -->           
                     <td></td>
                 </tr>
                 <tr>
-                    <td>分类名称</td>
-                    <td><input type="text" name = telep""></td>
+                    <td>数量</td>
+                    <td><input type="text" name = "putnum"></td>
                     <td></td>
                 </tr>
                 <tr>
@@ -126,40 +127,68 @@ table.tabl{
         </tbody>
     </table>
 
-  
     <script>
             var baseURL = "http://134.175.154.93:6677"   
 //添加绑定
             var bth_add = document.getElementById("bth_add");       //获取id bth_add(添加按钮)
             bth_add.onclick = function(event){    //给添加按钮  绑定处理函数
-            var newTr = tbody.firstElementChild.cloneNode(true);     //克隆父元素下第一个子元素 
-            newTr.className = "";        //因为tr被用none隐藏所以克隆出来的要是不想被隐藏就把值设置为空
-            tbody.appendChild(newTr);     //给父元素下面子元素最后添加克隆产物
-            newTr.children[1].innerText = "徐先生";    //添加时姓名里面显示内容
+            document.querySelector("input[name=putname]").value = "";
+			document.querySelector("input[name=putnum]").value = "";
+			document.querySelector("input[name=id]").value = "";
              } 
-//保存绑定
-            document.forms[0].onsubmit = function(event){  //给保存添加绑定
-                alert(1);
-    
-                event.preventDefault();  //阻止默认行为
+
+
+//提交绑定
+            document.forms[0].onsubmit = function(event){ //给保存添加绑定
+ //提交数据与后台交互
+    //获取有效值
+            var putname = document.querySelector("input[name=putname]").value;  //获取文档中的元素
+            var putnum = document.querySelector("input[name=putnum]").value;
+            var id = document.querySelector("input[name=id]").value; 
+    //与后台进行交互
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST",baseURL+"/category/insertCategory");
+            xhr.responseType = "json";
+            xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded')
+			var data;
+			if(id){
+				 data = "id="+id+"&name="+putname+"&num="+putnum
+                //data = {id:id,name:putname,num:putnum}
+                console.log("data:",data)
+			} else {
+				data = "name="+putname+"&num="+putnum
+			}
+            xhr.send(data);
+            xhr.onreadystatechange=function(){
+                if(this.readyState === 4){
+                   if(this.status === 200){
+                initData();
+              console.log(this.response.message);
+                
+                   }
+                }
+            } 
+            event.preventDefault();  //阻止默认行为
             }        
-    
+
+
 //删除绑定
             var tbody = document.getElementsByTagName("tbody")[1];   //获取tbody的第几个标签
             tbody.onclick = function(event){   //给删除按钮  绑定处理函数  
             if(event.target.nodeName ==="A"){ //判断event.target是否等于a       
+            switch(event.target.className){     //修改判断
+            case "bth_arr":           //当判断为删除时执行调用ajax删除数据库中的数据
             var id = event.target.parentNode.parentNode.children[0].children[0].value;  //让id等于input这样删除input时删除该id即可   
-
-//调用ajax删除数据库中的数据      
+//调用ajax删除数据库中的数据        
             var xhr = new XMLHttpRequest(); //实例化对象
-            xhr.responseType = "json"
+            xhr.responseType = "json";
             xhr.open("POST",baseURL+"/category/deleteByCategoryId");    //后台需要post类型调取
             xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded')   //查询字符串格式
-            xhr.send("id="+id)  
+            xhr.send("id="+id);  
             xhr.onreadystatechange = function(){
             if(this.readyState === 4){
                if(this.status === 200){
-            console.log(this.response);
+            console.log(this.response.message);
             if(this.response.status === 200){
                 initData();
             }else{
@@ -167,6 +196,18 @@ table.tabl{
             }
             }
             }
+            }
+             break;
+            case "bth_ess":             //当判断为修改时执行
+            
+            var id = event.target.parentNode.parentNode.children[0].children[0].value;
+            console.log("id=",id    )
+            var putname = event.target.parentNode.parentNode.children[2].innerText;
+			var putnum = event.target.parentNode.parentNode.children[3].innerText;
+			document.querySelector("input[name=putname]").value = putname;
+			document.querySelector("input[name=putnum]").value = putnum;
+			document.querySelector("input[name=id]").value = id; 
+            break;
             }
         }
     }   
@@ -178,23 +219,24 @@ initData();
         xhr.responseType = "json";  //设置请求头()设置响应类型为jnso 且转换为对象
         xhr.send()  
         xhr.onreadystatechange = function(){   //监听响应
-         if(this.readyState === 4){   
+         if(this.readyState === 4){
+             //if(this.staus ===200){   
               Array.prototype.slice.call(tbody.children,0).forEach(function(item,index){  //先将tbody中的数据清除掉
-                if(index!== 0){
+                if(index!== 0){       //隐藏的tr不能删除
                 tbody.removeChild(item); 
               }     
               });           
-              this.response.data.forEach(function(iten){  //遍历结果  渲染数据
-                console.log(iten);
+              this.response.data.forEach(function(item){  //遍历结果  渲染数据
               var newTr = tbody.firstElementChild.cloneNode(true);
-              newTr.children[0].children[0].value = iten.id; 
+              newTr.children[0].children[0].value = item.id; 
               //newTr.children[1].innerHTML = "<strong>"+iten.name+"</strong>";  
-              newTr.children[2].innerHTML = "<strong>"+iten.name+"</strong>";  
-              newTr.children[3].innerHTML = "<strong>"+iten. num+"</strong>";
-              newTr.children[4].innerHTML = "<strong>"+iten. parentId+"</strong>";
+              newTr.children[2].innerHTML = "<strong>"+item.name+"</strong>";  
+              newTr.children[3].innerHTML = "<strong>"+item. num+"</strong>";
+              newTr.children[4].innerHTML = "<strong>"+item. parentId+"</strong>";
               newTr.className = "";        
               tbody.appendChild(newTr); 
               })
+            // }
            }else{
               alert("接口异常");
           }
