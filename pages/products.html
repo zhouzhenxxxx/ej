@@ -177,6 +177,7 @@ $(function(){
 
 	//为批量删除绑定事件
 	$(".btns>div:nth-child(2)").on("click",function(){
+		/*//方法一：
 		//1、先获得批量删除的id组参数
 		//1.1、通过获得所有复选框得到产品个数
 		var chckBox= document.getElementsByName("chckBox");
@@ -200,6 +201,7 @@ $(function(){
 		//return ids;  //跳出该函数
 
 		var idList="idList="+ids;
+		console.log("idList:",idList)
 
 		//!!!批量删除所需得参数为: idList=id1,id2
 		//console.log(idList)
@@ -207,13 +209,38 @@ $(function(){
 		$.post(baseURL+"/product/deleteBathProduct",idList,function(response){
 			initData();
 			alert(response.message);
-		})
+		})*/
+
+		//方法二：
+		//通过jquery方法实现批量删除
+		//jQuery的map方法和数组的map方法的参数位置调换了，jQuery的map（index，item）；而数组的map（item，index），这里需要注意
+		var ids=$("input[type=checkbox]:checked").map(function(index,item){ 
+			//映射得到value里存放的id值，作为后面的参数
+			console.log("item的DOM:",item);
+			console.log('$(item)的对象:',$(item));
+			//return item.value; //等价于下方
+			return $(item).val();
+			
+		}).toArray(); //不是.checked
+		console.log("ids:",ids)
+		var idList ="idList="+ids;     //数组拼接字符串
+		console.log('idList:',idList)
+		if(confirm("是否确认修改？")){
+			$.post(baseURL+"/product/deleteBathProduct",idList,function(response){
+				initData();
+			})
+		}
+		
+
+
+
+
 		
 	})
 
 
 	//为批量更新绑定事件
-	$(".btns>div:nth-child(2)").on("click",function(){
+	$(".btns>div:nth-child(1)").on("click",function(){
 		//1、先获得批量删除的id组参数
 		//1.1、通过获得所有复选框得到产品个数
 		var chckBox= document.getElementsByName("chckBox");
@@ -254,6 +281,12 @@ $(function(){
 
 
 	
+	//当点击下拉框，选中不同的值时，清空原本的输入框的值
+	$(".btn select").on("click",function(){
+		//$(".btn input[name=text]").arrt("value","");//错误写法
+		//$(".btn input[name=text]")setAttribute("value","");//错误写法
+		$(".btn input[name=text]").val("");
+	})
 
 	//为查询按钮绑定事件
 	$("#query").on("click",function(){
@@ -586,8 +619,6 @@ $(function(){
 						<td><input type="text" name="categoryId"></td>
 						<td>不能随便改，受到外键约束</td>
 					</tr>
-					
-					
 					
 				</tbody>
 			</table>

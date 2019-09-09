@@ -63,8 +63,8 @@ $(function(){
 		$.post(baseURL+"/comment/insertComment",param,function(response){
 			alert(response.message);
 		})
-
 	})
+
 
 	//为删除按钮绑定事件
 	$("#customer_tbl tbody").on("click","a",function(event){
@@ -75,10 +75,9 @@ $(function(){
 
 			//模拟点击查询事件，实现刷新数据
 			$("#query").trigger("click");
-		});
-
-		
+		});	
 	})
+
 
 	//为查询按钮绑定事件
 	$("#query").on("click",function(){
@@ -227,7 +226,6 @@ $(function(){
 				break;
 		}
 	})
-
 
 })
 
