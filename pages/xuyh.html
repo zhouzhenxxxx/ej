@@ -15,16 +15,6 @@ body{
     padding: 0px;
     cursor: pointer;
 }
-h3{
-   margin:0px;
-   font-weight: none; 
-}
-h3>a{
-    text-decoration: none;
-    color: #000;
-    font-size: 24px;
-    font-weight: none;
-}
 
 .navigation{
     display:inline-block;
@@ -74,12 +64,11 @@ table.tabl{
   }
 </style>
 <body>
-    <h3><a href="javascript:void(0)">主页</a>/分类管理</h3>
     <div class="navigation" id="bth_add">添加</div>
     <div class="navigation">批量删除</div>
     <div class="navigation">导出</div>
     <div class="import "><input type="text" name =seek placeholder="请输入...">
-    <a href="javascript:void(0)">搜索</a>
+    <div class="navigation">查询</div>
     </div>
     <form action="javascript:void(0)" class="submit">
             <input type="hidden" name="id">
@@ -220,7 +209,7 @@ initData();
         xhr.send()  
         xhr.onreadystatechange = function(){   //监听响应
          if(this.readyState === 4){
-             //if(this.staus ===200){   
+             if(this.status ===200){   
               Array.prototype.slice.call(tbody.children,0).forEach(function(item,index){  //先将tbody中的数据清除掉
                 if(index!== 0){       //隐藏的tr不能删除
                 tbody.removeChild(item); 
@@ -236,10 +225,8 @@ initData();
               newTr.className = "";        
               tbody.appendChild(newTr); 
               })
-            // }
-           }else{
-              alert("接口异常");
-          }
+            }
+           }
          }
         }
         </script>
