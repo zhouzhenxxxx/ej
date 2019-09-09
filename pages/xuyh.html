@@ -18,9 +18,11 @@ body{
 
 .navigation{
     display:inline-block;
-    width: 100px;
-    height: 30px;
-    border: 1px solid #ededed;
+    /* width: 100px;
+    height: 30px; */
+    padding: 0px 13px 0px 13px;;
+    border: 1px solid #639ac7;
+    background-color: #639ac7;
     text-align: center;
     line-height: 30px;
     margin-right: 15px;
@@ -29,12 +31,13 @@ body{
 }
 .import{
     display:inline-block;
-    margin-left: 50px;
+    margin-left: 10px;
     color: #003;
+    
 }
-input{
-    border: 1px solid #18aeff;
-    height:25px;
+.import>input{
+    border: 5px solid #639ac7;
+    height:20px;
     
 }
 .import>a{
@@ -62,13 +65,36 @@ table.tabl{
   .submit{
       margin-bottom: 10px;
   }
+  .bth{
+    display:inline-block;
+    border: 6px solid #639ac7;
+    margin-left: 600px;
+   
+    
+    
+  }
+  .bth>select{
+    width: 80px;
+    border: none;
+    
+  }
 </style>
 <body>
+    <div>
     <div class="navigation" id="bth_add">添加</div>
     <div class="navigation">批量删除</div>
     <div class="navigation">导出</div>
+    
+     <div class="bth">
+        <select name="query_condition" id="query_condition">
+            <option value="order_id" selected>名称查询</option>
+            <option value="query">数量查询</option>
+            <option value="basic">类型查询</option>
+        </select>
+    </div>
     <div class="import "><input type="text" name =seek placeholder="请输入...">
     <div class="navigation">查询</div>
+    </div>
     </div>
     <form action="javascript:void(0)" class="submit">
             <input type="hidden" name="id">
@@ -136,14 +162,12 @@ table.tabl{
             var id = document.querySelector("input[name=id]").value; 
     //与后台进行交互
             var xhr = new XMLHttpRequest();
-            xhr.open("POST",baseURL+"/category/insertCategory");
+            xhr.open("POST",baseURL+"/category/updateCategory");
             xhr.responseType = "json";
             xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded')
 			var data;
 			if(id){
 				 data = "id="+id+"&name="+putname+"&num="+putnum
-                //data = {id:id,name:putname,num:putnum}
-                console.log("data:",data)
 			} else {
 				data = "name="+putname+"&num="+putnum
 			}
@@ -190,7 +214,6 @@ table.tabl{
             case "bth_ess":             //当判断为修改时执行
             
             var id = event.target.parentNode.parentNode.children[0].children[0].value;
-            console.log("id=",id    )
             var putname = event.target.parentNode.parentNode.children[2].innerText;
 			var putnum = event.target.parentNode.parentNode.children[3].innerText;
 			document.querySelector("input[name=putname]").value = putname;
