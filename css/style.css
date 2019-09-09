@@ -1,9 +1,6 @@
 html,body,.container {
 	height: 100%;
 }
-.container {
-
-}
 .container > .left {
 	width: 220px;
 	background-color: #0f66ab;
@@ -22,9 +19,7 @@ html,body,.container {
 	line-height: 4em;
 	border-bottom: 1px solid #3889ca
 }
-.left >ul.left_nav {
 
-}
 .left >ul.left_nav > li{
 	text-align: center;
 	line-height: 3em;
