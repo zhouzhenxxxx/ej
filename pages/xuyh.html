@@ -214,6 +214,7 @@ table.tabl{
             case "bth_ess":             //当判断为修改时执行
             
             var id = event.target.parentNode.parentNode.children[0].children[0].value;
+            console.log("id=",id    )
             var putname = event.target.parentNode.parentNode.children[2].innerText;
 			var putnum = event.target.parentNode.parentNode.children[3].innerText;
 			document.querySelector("input[name=putname]").value = putname;
